@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cluster="http://www.mulesoft.org/schema/mule/ee/cluster" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+<http:request-config name="HTTP_Request_Configuration" host="${airlines.host}" port="${airlines.port}" doc:name="HTTP Request Configuration"/>
+    <context:property-placeholder location="restapi-Dev.Properties, restapi-common.Properties"/>
+    <configuration defaultExceptionStrategy-ref="ApplicationExceptionStrategy" doc:name="Configuration">
+        <http:config useTransportForUris="false"/>
+    </configuration>
+    
+     <catch-exception-strategy name="ServerUnavailableException">
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ 
+"code": 503, 
+"message" : "unable to process your request due to target system is invalid" 
+}]]></dw:set-payload>
+            </dw:transform-message>
+        </catch-exception-strategy>
+     <catch-exception-strategy name="ApplicationExceptionStrategy">
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ 
+"code": 500, 
+"message" : "sorry your request has not been processed, please contact support Team" 
+}]]></dw:set-payload>
+            </dw:transform-message>
+        </catch-exception-strategy>
+
+</mule>
+ 

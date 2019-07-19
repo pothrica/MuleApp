@@ -1,0 +1,26 @@
+#%RAML 0.8
+title: Sample API
+baseUri: http//localhost:8081/api
+/unitedFlightsAirlines: 
+ get: 
+  queryParameters: 
+   destination:
+    required: true
+    maxLength: 3
+    minLength: 3
+  responses: 
+   200: 
+    body: 
+     application/json: 
+      example: !include Examples\unitedFlightsAirlines-get-response.json
+      
+/allFlightsAirlines: 
+ get: 
+  responses: 
+   200: 
+    body: 
+     application/json: 
+      example: !include Examples\allFlightsAirlines-get-response.json
+      
+      
+       
